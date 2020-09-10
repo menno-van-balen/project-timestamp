@@ -33,34 +33,26 @@ app.get("/api/timestamp", (req, res) => {
 });
 
 app.get("/api/timestamp/:date_string", (req, res) => {
+  // route prarameters, unix uses numbers as input, utc a string
   const params = req.params.date_string;
-  const error = /[a-z, A-Z]/g.test(params);
-  const errorResponse = () => res.json({ error: "Invalid Date" });
+  const unixDate = new Date(+params);
+  const utcDate = new Date(params);
 
-  if (error) {
-    errorResponse();
-    // normal date input
-  } else if (params.includes("-")) {
-    const utcDate = new Date(params);
-    if (utcDate.toString() === "Invalid Date") {
-      errorResponse();
-    } else {
-      res.json({
-        unix: utcDate.getTime(),
-        utc: utcDate.toUTCString(),
-      });
-    }
+  // if unix date has a valid value
+  if (unixDate.getTime()) {
+    res.json({
+      unix: unixDate.getTime(),
+      utc: unixDate.toUTCString(),
+    });
+    // if utc date has a valid value
+  } else if (utcDate.toUTCString() !== "Invalid Date") {
+    res.json({
+      unix: utcDate.getTime(),
+      utc: utcDate.toUTCString(),
+    });
+    // else error
   } else {
-    // unix date input
-    const unixDate = new Date(+params);
-    if (unixDate.getTime() === null) {
-      errorResponse();
-    } else {
-      res.json({
-        unix: unixDate.getTime(),
-        utc: unixDate.toUTCString(),
-      });
-    }
+    res.json({ error: "Invalid Date" });
   }
 });
 
