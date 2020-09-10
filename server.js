@@ -23,7 +23,7 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
-// Get input from client - Route parameters (:date_string)
+// no input from client on api/timestamp
 app.get("/api/timestamp", (req, res) => {
   const date = new Date();
   res.json({
@@ -32,6 +32,7 @@ app.get("/api/timestamp", (req, res) => {
   });
 });
 
+// Get input from client - Route parameters (:date_string)
 app.get("/api/timestamp/:date_string", (req, res) => {
   // route prarameters, unix uses numbers as input, utc a string
   const params = req.params.date_string;
@@ -56,11 +57,13 @@ app.get("/api/timestamp/:date_string", (req, res) => {
   }
 });
 
-// listen for requests :)
-const port = 5000;
-var listener = app.listen(port, function () {
-  console.log("Your app is listening on port " + listener.address().port);
-});
-// var listener = app.listen(process.env.PORT, function () {
+// listen for requests
+// in dev:
+// const port = 5000;
+// var listener = app.listen(port, function () {
 //   console.log("Your app is listening on port " + listener.address().port);
 // });
+// deployed:
+var listener = app.listen(process.env.PORT, function () {
+  console.log("Your app is listening on port " + listener.address().port);
+});
