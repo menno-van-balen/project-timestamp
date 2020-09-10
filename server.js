@@ -33,18 +33,34 @@ app.get("/api/timestamp", (req, res) => {
 });
 
 app.get("/api/timestamp/:date_string", (req, res) => {
-  if (req.params.date_string.includes("-")) {
-    const date = new Date(req.params.date_string);
-    res.json({
-      unix: date.getTime(),
-      utc: date.toUTCString(),
-    });
+  const params = req.params.date_string;
+  const error = /[a-z, A-Z]/g.test(params);
+  const errorResponse = () => res.json({ error: "Invalid Date" });
+
+  if (error) {
+    errorResponse();
+    // normal date input
+  } else if (params.includes("-")) {
+    const utcDate = new Date(params);
+    if (utcDate.toString() === "Invalid Date") {
+      errorResponse();
+    } else {
+      res.json({
+        unix: utcDate.getTime(),
+        utc: utcDate.toUTCString(),
+      });
+    }
   } else {
-    const date = new Date(+req.params.date_string);
-    res.json({
-      unix: date.getTime(),
-      utc: date.toUTCString(),
-    });
+    // unix date input
+    const unixDate = new Date(+params);
+    if (unixDate.getTime() === null) {
+      errorResponse();
+    } else {
+      res.json({
+        unix: unixDate.getTime(),
+        utc: unixDate.toUTCString(),
+      });
+    }
   }
 });
 
